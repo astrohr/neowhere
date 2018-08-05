@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>neowhere | Where is my NEO?</title>
+    {% block extrahead %}{% endblock %}
+</head>
+<body>
+
+<header>
+    <h1>neowhere</h1>
+
+    <p>Where is my NEO?</p>
+
+    <p>
+        This page generates uncertainty map images of a given object.
+        Intention is for these images to be overlayed on or blinked with actual CCD exposures to aid in the process of finding asteroids.
+    </p>
+</header>
+<main>{% block main %}{% endblock %}</main>
+
+<footer>{% block footer %}{% endblock %}</footer>
+
+{% block extrafoot %}{% endblock %}
+</body>
+</html>

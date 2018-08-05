@@ -1,0 +1,77 @@
+{% extends 'uncertaintymap/base.html' %}
+{% load static %}
+
+{% block extrahead %}
+    <script type="text/javascript" charset="utf-8" src="{% static 'uncertaintymap/julianDate.min.js' %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static 'uncertaintymap/fits.js' %}"></script>
+{% endblock extrahead %}
+
+{% block extrafoot %}
+    <script type="text/javascript" charset="utf-8" src="{% static 'uncertaintymap/form.js' %}"></script>
+{% endblock extrafoot %}
+
+{% block main %}
+    <h2>Uncertainty Form</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <fieldset id="fits_fieldset" style="display: none;">
+            <legend>Load from FITS headers</legend>
+            <input type="file" id="local_file" style="padding: 12px; margin: -12px; display: block; width: 100%;" />
+        </fieldset>
+        {{ form.as_p }}
+        <button>Generate image</button>
+    </form>
+    <h3>Field definitions</h3>
+    <dl>
+        <dt>Image width & height</dt>
+        <dd>
+            Dimensions in pixels for the generated image. <br />
+            Affects size (not content) of the generated image.
+        </dd>
+        <dt>Field width & height</dt>
+        <dd>
+            Field of view in the image, in arcseconds. Both axes use seconds of a degree (not hour).<br />
+            Affects content (not size) of the image.
+        </dd>
+        <dt>Center RA & DE</dt>
+        <dd>
+            Coordinates of the center of image. Generated uncertainty map will be moved to match those coordinates.<br />
+            Accepted formats: 12 23 34, 12:23:34, 12h23m34s (RA only),  12h 23m 34 (RA only), and similar.<br />
+            Optional.
+        </dd>
+        <dt>Image date</dt>
+        <dd>
+            Date and time of the exposure, in UTC.
+        </dd>
+        <dt>Object name</dt>
+        <dd>
+            Temporary MPC designation, exactly as on MPC.
+        </dd>
+        <dt>Observatory code</dt>
+        <dd>
+            MPC observatory code.<br />
+            There is no support for arbitrary coordinates on minorplanetcenter.net at the time of writing this.
+        </dd>
+        <dt>BG color</dt>
+        <dd>
+            Background color, 256 shades of gray.<br />
+            0 for black, 255 for white.
+        </dd>
+    </dl>
+
+    <h3>Cookies</h3>
+    <p>This page needs cookies to function. Only technically necessary cookies are used, no tracking.</p>
+{% endblock main %}
+
+{% block footer %}
+    <h2>TODO</h2>
+    <ul>
+        <li>populate the form from FITS headers</li>
+        <li>support for field rotation</li>
+        <li>additional info next to thumbnail</li>
+        <li>support transparent background</li>
+        <li>several options for markers</li>
+    </ul>
+
+    <p>Created by <a href="fran@changeset.hr">fran@changeset.hr</a></p>
+{% endblock footer %}

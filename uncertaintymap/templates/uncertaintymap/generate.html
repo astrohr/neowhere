@@ -1,0 +1,27 @@
+{% extends 'uncertaintymap/base.html' %}
+
+{% block main %}
+
+    <h2>Generating Uncertainty Map</h2>
+
+    <ul>
+        <li>
+            Querying minorplanetcenter.net...
+            {requests_status}
+        </li>
+        <li>
+            Rendering image...
+            {pil_status}
+        </li>
+        {result}
+    </ul>
+    <p>
+        <a href="/">back</a>
+    </p>
+{% endblock main %}
+
+
+
+{% block footer %}
+    Thank you for using neowhere.
+{% endblock footer %}
