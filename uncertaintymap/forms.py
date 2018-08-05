@@ -85,12 +85,12 @@ class UncertaintyForm(forms.Form):
     image_height = forms.IntegerField(min_value=1)
     field_width = forms.IntegerField(min_value=1)
     field_height = forms.IntegerField(min_value=1)
-    center_ra = AstroRaField(required=False)
-    center_de = AstroDeField(required=False)
     image_date = forms.DateTimeField(
         widget=DateTimeInput(attrs={'step': 1}),
         input_formats=['%Y-%m-%dT%H:%M:%S'],
     )
+    center_ra = AstroRaField(required=False)
+    center_de = AstroDeField(required=False)
     object_name = forms.CharField(max_length=15)
     observatory_code = forms.CharField(max_length=3)
     bg_color = forms.IntegerField(min_value=0, max_value=255)

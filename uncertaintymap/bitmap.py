@@ -78,7 +78,7 @@ class Orbmap:
         off_x = floor(self.w / 2)
         off_y = floor(self.h / 2)
         for p in self.points:
-            x = self.sec2pixel(-p[0] - self.center_ra_off, 'x') + off_x
-            y = self.sec2pixel(-p[1] - self.center_de_off, 'y') + off_y
+            x = self.sec2pixel(-p[0] + self.center_ra_off, 'x') + off_x
+            y = self.sec2pixel(-p[1] + self.center_de_off, 'y') + off_y
             if 0 <= x <= self.w - 1 and 0 <= y <= self.h - 1:
                 yield x, y, p[2]

@@ -82,11 +82,11 @@ class MpcUncertaintyMap:
             raise ValueError('No measurements found')
         self._load_center(min_point, min_ephems_url)
 
-    def _load_center(self, min_point, min_emphems_url):
+    def _load_center(self, min_point, min_ephems_url):
         if FAKE_REQUESTS:
             content = fake_ephemerides
         else:
-            response = requests.get(min_emphems_url)
+            response = requests.get(min_ephems_url)
             content = response.content.decode('utf-8')
         in_pre = False
         starts_with_date = re.compile(r'\d{4} \d{2} \d{2} ')
@@ -105,7 +105,8 @@ class MpcUncertaintyMap:
             if line.strip().startswith('<pre'):
                 in_pre = True
 
-    def parse_point(self, line: str) -> Tuple[int, int, str]:
+    @staticmethod
+    def parse_point(line: str) -> Tuple[int, int, str]:
         while '  ' in line:
             line = line.replace('  ', ' ')
         position = tuple(map(int, line.strip().split(' ', 3)[:2]))
