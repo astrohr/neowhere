@@ -50,6 +50,8 @@ class UncertaintyFormView(FormView):
             'observatory_code',
             'image_width',
             'image_height',
+            'flip_horizontally',
+            'flip_vertically',
             'field_width',
             'field_height',
             'bg_color',
@@ -136,6 +138,8 @@ class UncertaintyGenerateView(TemplateView):
             orb = Orbmap(
                 width=self.cleaned_data['image_width'],
                 height=self.cleaned_data['image_height'],
+                flip_ra=self.cleaned_data['flip_horizontally'],
+                flip_de=self.cleaned_data['flip_vertically'],
                 angle_seconds_ra=self.cleaned_data['field_width'],
                 angle_seconds_de=self.cleaned_data['field_height'],
                 ra_off_s=ra_off,

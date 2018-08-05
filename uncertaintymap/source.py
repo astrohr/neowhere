@@ -4,7 +4,7 @@ from typing import Tuple, List
 import requests
 
 
-FAKE_REQUESTS = False
+FAKE_REQUESTS = True
 
 
 class MpcUncertaintyMap:

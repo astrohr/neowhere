@@ -85,6 +85,8 @@ class UncertaintyForm(forms.Form):
     image_height = forms.IntegerField(min_value=1)
     field_width = forms.IntegerField(min_value=1)
     field_height = forms.IntegerField(min_value=1)
+    flip_horizontally = forms.BooleanField(required=False)
+    flip_vertically = forms.BooleanField(required=False)
     image_date = forms.DateTimeField(
         widget=DateTimeInput(attrs={'step': 1}),
         input_formats=['%Y-%m-%dT%H:%M:%S'],

@@ -10,6 +10,7 @@ class Orbmap:
     def __init__(
             self,
             width: int, height: int,
+            flip_ra: bool, flip_de: bool,
             angle_seconds_ra: int, angle_seconds_de: int,
             ra_off_s: int, de_off_s: int,
             points: List[Tuple[int, int, str]],
@@ -17,6 +18,8 @@ class Orbmap:
     ):
         self.w = width
         self.h = height
+        self.flip_ra = flip_ra
+        self.flip_de = flip_de
         self.ra_s = angle_seconds_ra
         self.de_s = angle_seconds_de
         self.center_ra_off = ra_off_s
@@ -49,6 +52,10 @@ class Orbmap:
     def draw(self):
         for point in self.data:
             self.draw_marker(point)
+        if self.flip_ra:
+            self.img = self.img.transpose(Image.FLIP_LEFT_RIGHT)
+        if self.flip_de:
+            self.img = self.img.transpose(Image.FLIP_TOP_BOTTOM)
 
     def save(self, file_path: str):
         self.img.save(file_path)
