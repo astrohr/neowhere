@@ -50,6 +50,8 @@ class UncertaintyFormView(FormView):
             'observatory_code',
             'image_width',
             'image_height',
+            'flip_horizontally',
+            'flip_vertically',
             'field_width',
             'field_height',
             'bg_color',
@@ -126,15 +128,18 @@ class UncertaintyGenerateView(TemplateView):
 
     def render_image(self):
         try:
-            # TODO check this offset:
-            # ra_off = self.cleaned_data['center_ra'] - self.source.center_ra_sec
-            # de_off = self.cleaned_data['center_de'] - self.source.center_ra_sec
-            # if None in (ra_off, de_off):
-            #     ra_off, de_off = 0, 0
-            ra_off, de_off = 0, 0
+            center_ra = self.cleaned_data['center_ra']
+            center_de = self.cleaned_data['center_de']
+            if None in (center_ra, center_de):
+                ra_off, de_off = 0, 0
+            else:
+                ra_off = center_ra - self.source.center_ra_sec
+                de_off = center_de - self.source.center_de_sec
             orb = Orbmap(
                 width=self.cleaned_data['image_width'],
                 height=self.cleaned_data['image_height'],
+                flip_ra=self.cleaned_data['flip_horizontally'],
+                flip_de=self.cleaned_data['flip_vertically'],
                 angle_seconds_ra=self.cleaned_data['field_width'],
                 angle_seconds_de=self.cleaned_data['field_height'],
                 ra_off_s=ra_off,
