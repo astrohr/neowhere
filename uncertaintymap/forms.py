@@ -85,6 +85,7 @@ class UncertaintyForm(forms.Form):
     image_height = forms.IntegerField(min_value=1)
     field_width = forms.IntegerField(min_value=1)
     field_height = forms.IntegerField(min_value=1)
+    field_rotation = forms.FloatField(min_value=0, max_value=360)
     flip_horizontally = forms.BooleanField(required=False)
     flip_vertically = forms.BooleanField(required=False)
     image_date = forms.DateTimeField(
