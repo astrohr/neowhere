@@ -4,7 +4,7 @@ from typing import Tuple, List
 import requests
 
 
-FAKE_REQUESTS = True
+FAKE_REQUESTS = False
 
 
 class MpcUncertaintyMap:
@@ -32,6 +32,8 @@ class MpcUncertaintyMap:
         self.closest_ephems_url = None
         self.center_ra_sec = 0
         self.center_de_sec = 0
+        self.range_ra = [0, 0]
+        self.range_de = [0, 0]
 
     @property
     def url(self) -> str:
@@ -66,6 +68,7 @@ class MpcUncertaintyMap:
                 in_pre = False
             if in_pre:
                 point = self.parse_point(line)
+                self._update_range(*point[:2])
                 self._offsets.append(point)
                 distance2 = point[0] ** 2 + point[1] ** 2
                 if distance2 < min_distance2:
@@ -121,6 +124,20 @@ class MpcUncertaintyMap:
         else:
             color = 'green'
         return (*position, color)
+
+    def _update_range(self, ra, de):
+        self.range_ra[0] = min(self.range_ra[0], ra)
+        self.range_de[0] = min(self.range_de[0], de)
+        self.range_ra[1] = max(self.range_ra[1], ra)
+        self.range_de[1] = max(self.range_de[1], de)
+
+    @property
+    def full_map_width(self):
+        return self.range_ra[1] - self.range_ra[0]
+
+    @property
+    def full_map_height(self):
+        return self.range_de[1] - self.range_de[0]
 
 
 fake_content = '''Content-type: text/html

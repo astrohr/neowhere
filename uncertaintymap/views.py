@@ -15,11 +15,10 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from uncertaintymap.bitmap import Orbmap
+from uncertaintymap.bitmap import Orbmap, FullOrbmap
 from uncertaintymap.forms import UncertaintyForm
 from uncertaintymap.source import MpcUncertaintyMap
-from uncertaintymap.utils import julian_timestamp
-
+from uncertaintymap.utils import julian_timestamp, sec2pixel
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +49,7 @@ class UncertaintyFormView(FormView):
             'observatory_code',
             'image_width',
             'image_height',
+            'field_rotation',
             'flip_horizontally',
             'flip_vertically',
             'field_width',
@@ -76,6 +76,8 @@ class UncertaintyGenerateView(TemplateView):
         self.cleaned_data = None
         self.source = None
         self.abort = False
+        self.orb = None
+        self.full_orb = None
 
     def get(self, request, *args, **kwargs):
         self.cleaned_data = self.request.session.get('cleaned_data')
@@ -135,9 +137,10 @@ class UncertaintyGenerateView(TemplateView):
             else:
                 ra_off = center_ra - self.source.center_ra_sec
                 de_off = center_de - self.source.center_de_sec
-            orb = Orbmap(
+            self.orb = Orbmap(
                 width=self.cleaned_data['image_width'],
                 height=self.cleaned_data['image_height'],
+                rotation=self.cleaned_data['field_rotation'],
                 flip_ra=self.cleaned_data['flip_horizontally'],
                 flip_de=self.cleaned_data['flip_vertically'],
                 angle_seconds_ra=self.cleaned_data['field_width'],
@@ -147,10 +150,34 @@ class UncertaintyGenerateView(TemplateView):
                 points=self.source.offsets,
                 bg_color=(self.cleaned_data['bg_color'],) * 3,
             )
-            orb.draw()
-            orb.save(self.generated_file_path)
+            self.orb.draw()
+            self.orb.save(self.generated_file_path)
         except Exception as e:
             logger.exception('Error during render_image')
+            self.abort = True
+            return '<br />'.join(format_exception_only(type(e), e))
+        else:
+            return 'ok'
+
+
+    def render_context_image(self):
+        try:
+            self.full_orb = FullOrbmap(
+                width=self.cleaned_data['image_width'],
+                height=self.cleaned_data['image_height'],
+                rotation=self.cleaned_data['field_rotation'],
+                flip_ra=self.cleaned_data['flip_horizontally'],
+                flip_de=self.cleaned_data['flip_vertically'],
+                angle_seconds_ra=self.source.full_map_width,
+                angle_seconds_de=self.source.full_map_height,
+                points=self.source.offsets,
+                bg_color=(self.cleaned_data['bg_color'],) * 3,
+                orbmap=self.orb,
+            )
+            self.full_orb.draw()
+            self.full_orb.save(self.generated_context_file_path)
+        except Exception as e:
+            logger.exception('Error during render_context_image')
             self.abort = True
             return '<br />'.join(format_exception_only(type(e), e))
         else:
@@ -170,6 +197,22 @@ class UncertaintyGenerateView(TemplateView):
     @property
     def generated_file_url(self):
         return default_storage.url(self.generated_file_name)
+
+    @property
+    def generated_context_file_name(self):
+        return '{object_name}-{iso_datetime}-context.png'.format(
+            object_name=self.cleaned_data['object_name'],
+            iso_datetime=self.cleaned_data['image_date'].split('.')[0],
+        )
+
+    @property
+    def generated_context_file_path(self):
+        return os.path.join(
+            default_storage.location, self.generated_context_file_name)
+
+    @property
+    def generated_context_file_url(self):
+        return default_storage.url(self.generated_context_file_name)
 
 
 class UncertaintyDownloadView(View):
